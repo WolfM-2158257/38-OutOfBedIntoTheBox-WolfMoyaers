@@ -1,4 +1,5 @@
 #pragma once
+#include <SPI.h>
 #include <TFT_eSPI.h> // Hardware-specific library
 #include "Radio.h"
 #include "Scale.h"
@@ -9,8 +10,6 @@ class Alarm{
         Radio radio{};
         Scale scale{};
         AlarmClock alarmClock{};
-
-        TFT_eSPI tft = TFT_eSPI();
     public:
         Alarm();
         void update();

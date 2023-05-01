@@ -58,7 +58,7 @@ void setupWifi()
 void loop()
 {
 	weightedAlarm->update();
-	// if (!weightedAlarm->shouldSound()){
-	// 	delay(5000);
-	// }
+	if (!weightedAlarm->shouldSound()){
+		delay(5000);
+	}
 }
