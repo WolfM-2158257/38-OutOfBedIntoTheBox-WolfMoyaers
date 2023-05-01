@@ -8,7 +8,7 @@ void AlarmClock::setWakeupTime(std::tm newTime){
     wakeupTime = newTime;
 }
 
-void AlarmClock::setWakeupTime(String newTime){
+void AlarmClock::setWakeupTime(std::string newTime){
     wakeupTime = toTmTime(newTime);
 }
 
@@ -17,7 +17,7 @@ std::tm AlarmClock::getWakeupTime()
     return wakeupTime;
 }
 
-String AlarmClock::getWakeupTimeStr()
+std::string AlarmClock::getWakeupTimeStr()
 {
     return toReadableTime(wakeupTime);
 }
@@ -46,24 +46,27 @@ bool AlarmClock::isAlarming()
 
 std::tm AlarmClock::getCurrentTime()
 {
-    std::tm currentTime;
-    getLocalTime(&currentTime);
+    time_t timeT = time(NULL);
+    std::tm currentTime = *localtime(&timeT);
     return currentTime;
 }
 
-String toReadableTime(std::tm inputTime)
+std::string toReadableTime(std::tm inputTime)
 {
     char buff[10];
     strftime(buff, 20, "%H:%M:%S", &inputTime);
 
-    return String(buff);
+    return std::string(buff);
 }
 
-std::tm toTmTime(String timeStr)
+std::tm toTmTime(std::string timeStr)
 {
     struct std::tm time;
-    std::istringstream ss(timeStr.c_str());
-    ss >> std::get_time(&time, "%H:%M:%S"); // or just %T in this case
+    // std::istringstream ss(timeStr.c_str());
+    time.tm_hour = stoi(timeStr.substr(0, 2));
+    time.tm_min = stoi(timeStr.substr(3, 5));
+    time.tm_sec = stoi(timeStr.substr(6, 8));
+    // ss >> std::get_time(&time, "%H:%M:%S"); // or just %T in this case
     return time;
 }
 

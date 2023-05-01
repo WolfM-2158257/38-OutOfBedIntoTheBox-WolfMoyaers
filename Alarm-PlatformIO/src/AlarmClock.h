@@ -1,10 +1,9 @@
 #pragma once
 
-#include <ctime>
 #include "time.h"
+#include <ctime>
 #include <sstream>
-#include <iomanip>
-#include "Arduino.h"
+#include <string>
 
 class AlarmClock{
     private:
@@ -15,14 +14,14 @@ class AlarmClock{
     public:
         AlarmClock();
         void setWakeupTime(std::tm newTime);
-        void setWakeupTime(String newTime);
+        void setWakeupTime(std::string newTime);
         std::tm getWakeupTime();
-        String getWakeupTimeStr();
+        std::string getWakeupTimeStr();
 
         bool isAlarming();
 
 };
 
-String toReadableTime(std::tm time);
-std::tm toTmTime(String timeStr);
+std::string toReadableTime(std::tm time);
+std::tm toTmTime(std::string timeStr);
 int toSeconds(std::tm time);

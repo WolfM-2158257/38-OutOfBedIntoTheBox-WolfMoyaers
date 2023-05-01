@@ -44,11 +44,8 @@ void setupWifi()
 	}
 
 	// WiFi Connected, print IP to serial monitor
-	Serial.println("");
-	Serial.println("WiFi connected");
-	Serial.println("IP address: ");
+	Serial.println("WiFi connected IP address: ");
 	Serial.println(WiFi.localIP());
-	Serial.println("");
 	const char* ntpServer = "pool.ntp.org";
 	const long gmtOffset_sec = 3600;
 	const int daylightOffset_sec = 3600;
