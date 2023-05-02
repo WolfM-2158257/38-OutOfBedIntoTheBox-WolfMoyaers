@@ -2,6 +2,8 @@
 
 #include "Arduino.h"
 #include "Audio.h"
+#include <SPIFFS.h>
+
 
 class Radio{
     private:
@@ -12,7 +14,7 @@ class Radio{
 
         Audio audio{};
         String currentChannel = "0n-80s.radionetz.de:8000/0n-70s.mp3";
-        static const int defaultVolume = 10;
+        static const int defaultVolume = 3;
 
     public:
         Radio();

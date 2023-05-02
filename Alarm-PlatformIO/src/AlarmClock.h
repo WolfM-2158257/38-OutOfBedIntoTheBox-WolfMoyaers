@@ -4,6 +4,7 @@
 #include <ctime>
 #include <sstream>
 #include <string>
+#include "Arduino.h"
 
 class AlarmClock{
     private:

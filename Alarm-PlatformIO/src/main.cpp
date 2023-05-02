@@ -7,8 +7,10 @@
   source for setting up HX711: testing and calibration examples
 */
 
-#include "WiFi.h"
+#include <SPIFFS.h>
 #include "Alarm.h"
+#include "WiFi.h"
+#include "esp_wifi.h"
 
 // include credentials for network defined in `credentials.h`
 // String ssid =       "NETWORK";
@@ -25,9 +27,16 @@ void setup()
 	// Start Serial Monitor
 	Serial.begin(115200); delay(10);
 
-	weightedAlarm = new Alarm{};
+	delay(250);
+
+	if (!SPIFFS.begin()) { // Initialize SPIFFS
+		Serial.println(F("An Error has occurred while mounting SPIFFS"));
+		return;
+	}
 
 	setupWifi();
+
+	weightedAlarm = new Alarm{};
 }
 
 void setupWifi()
@@ -50,6 +59,9 @@ void setupWifi()
 	const long gmtOffset_sec = 3600;
 	const int daylightOffset_sec = 3600;
 	configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+	WiFi.disconnect();
+	WiFi.mode(WIFI_OFF);
+	// delay(500);
 }
 
 void loop()

@@ -5,9 +5,16 @@ TFT_eSPI tft = TFT_eSPI();
 
 Alarm::Alarm()
 {
-    alarmClock.setWakeupTime("08:00:00");
+	// setup wakeuptime
+    alarmClock.setWakeupTime("01:00:00");
 	tft.init();
 	tft.setRotation(2);   //setRotation: 2: Screen upside down in landscape
+
+	// setup bluetooth
+	SerialBT.begin();
+	Serial.println("Bluetooth Started! Ready to pair...");
+	Serial.print("address: ");
+	Serial.println(SerialBT.getBtAddressString());
 
     // draw time
 	tft.fillScreen(TFT_BLACK);
@@ -17,7 +24,13 @@ Alarm::Alarm()
 
 void Alarm::update()
 {
-	handleInput(bluetoothSocket.receiveCommand());
+
+	// !! ik schrijf dit hier, anders vergeet ik het morgen... een mogelijke fix zou zijn om telkens de wifi aan en uit te zetten, 
+	// en de wifi enkel aanzetten wanneer er geluid is aant spelen.
+	if (SerialBT.available()){
+		std::string command = SerialBT.readString().c_str();
+		handleInput(command);
+	}
     // only checks weight when alarm is going off
 	if (this->shouldSound() && !scale.containsItem()){
 		radio.play();

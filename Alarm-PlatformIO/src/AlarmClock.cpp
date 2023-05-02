@@ -29,12 +29,12 @@ bool AlarmClock::isAlarming()
     int wakeupTimeSecondsMin = toSeconds(wakeupTime);
     int wakeupTimeSecondsMax = wakeupTimeSecondsMin + alarmSpanSeconds;
     
-    // Serial.print("wakeup time: ");
-    // Serial.println(wakeupTimeSecondsMin);
-    // Serial.println(toReadableTime(wakeupTime));
-    // Serial.print("current time: ");
-    // Serial.println(currentTimeSeconds);
-    // Serial.println(toReadableTime(currentTime));
+    Serial.print("wakeup time: ");
+    Serial.println(wakeupTimeSecondsMin);
+    Serial.println(toReadableTime(wakeupTime).c_str());
+    Serial.print("current time: ");
+    Serial.println(currentTimeSeconds);
+    Serial.println(toReadableTime(currentTime).c_str());
 
     if (currentTimeSeconds >= wakeupTimeSecondsMin
             && currentTimeSeconds <= wakeupTimeSecondsMax
@@ -46,8 +46,8 @@ bool AlarmClock::isAlarming()
 
 std::tm AlarmClock::getCurrentTime()
 {
-    time_t timeT = time(NULL);
-    std::tm currentTime = *localtime(&timeT);
+    std::tm currentTime; 
+    getLocalTime(&currentTime);
     return currentTime;
 }
 

@@ -6,7 +6,8 @@ Radio::Radio()
 	audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
 
 	audio.setVolume(defaultVolume);
-	audio.connecttohost(currentChannel.c_str());
+	// audio.connecttohost(currentChannel.c_str());
+	audio.connecttoFS(SPIFFS, "/alarm.wav");
 }
 
 void Radio::loop()
@@ -21,18 +22,20 @@ bool Radio::isPlaying()
 
 void Radio::play()
 {
+	Serial.println("Playing...");
     if (!isPlaying()){
         Serial.println("Audio is not running, playing a radio.");
-        audio.connecttohost(currentChannel.c_str());
+		audio.connecttoFS(SPIFFS, "/alarm.wav");
+        // audio.connecttohost(currentChannel.c_str());
     }
 }
 
 void Radio::stop()
 {
-    if (isPlaying()){
-        Serial.println("Audio is running, stopping it.");
-        audio.stopSong();
-    }
+    // if (isPlaying()){
+    //     Serial.println("Audio is running, stopping it.");
+    //     audio.stopSong();
+    // }
 }
 void Radio::setVolume(int volume)
 {
