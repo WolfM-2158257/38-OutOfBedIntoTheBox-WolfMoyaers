@@ -34,8 +34,7 @@ void Radio::play()
     if (!isPlaying()){
         Serial.println("Audio is not running, playing alarm.");
 		audio.pauseResume();
-		// audio.connecttoFS(SPIFFS, "/alarm.wav");
-        // audio.connecttohost(currentChannel.c_str());
+        // audio.connecttohost(currentChannel.c_str()); // can't use a radio, cuz we can't use wifi while using bluetooth...
     }
 }
 
@@ -55,6 +54,15 @@ void Radio::setVolume(int volume)
 		Serial.println("Volume is too high");
 	}
 
+}
+
+void Radio::setVolume(std::string volume){
+	setVolume(stoi(volume));
+}
+
+int Radio::getVolume()
+{
+    return audio.getVolume();
 }
 
 void Radio::setChannel(String channel)

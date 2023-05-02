@@ -9,7 +9,6 @@
 
 #include <SPIFFS.h>
 #include "Alarm.h"
-#include "WiFi.h"
 #include "esp_wifi.h"
 
 // include credentials for network defined in `credentials.h`
@@ -17,49 +16,51 @@
 // String password =   "PASSWORD";
 #include "credentials.h"
 
+#define BTN_PIN 32
+
 Alarm* weightedAlarm;
+bool stateButton = false;
+bool doSnooze = false;
+
+int lastSwitchTime = 0;
 
 // pre-define functions
 void setupWifi();
+void btnHandler();
 
 void setup()
 {
 	// Start Serial Monitor
 	Serial.begin(115200); delay(10);
-	// setupWifi();
+
+	pinMode(BTN_PIN, INPUT_PULLUP);
+
 	weightedAlarm = new Alarm{};
-}
-
-void setupWifi()
-{
-	// Setup WiFi in Station mode
-	WiFi.disconnect();
-	WiFi.mode(WIFI_STA);
-	WiFi.begin(ssid.c_str(), password.c_str());
-
-	while (WiFi.status() != WL_CONNECTED)
-	{
-		delay(500);
-		Serial.print(".");
-	}
-
-	// WiFi Connected, print IP to serial monitor
-	Serial.println("WiFi connected IP address: ");
-	Serial.println(WiFi.localIP());
-	const char* ntpServer = "pool.ntp.org";
-	const long gmtOffset_sec = 3600;
-	const int daylightOffset_sec = 3600;
-	configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-	// WiFi.disconnect();
-	WiFi.mode(WIFI_OFF);
-	// esp_wifi_stop();
-	delay(500);
 }
 
 void loop()
 {
 	weightedAlarm->update();
+	if (doSnooze){
+		doSnooze = false;
+		Serial.print("INTERRUPTION! ");
+		weightedAlarm->snooze();
+	}
+	stateButton = !digitalRead(BTN_PIN);
+	if (stateButton) {
+		btnHandler();
+	}
+
 	// if (!weightedAlarm->shouldSound()){
 	// 	delay(5000);
 	// }
+}
+
+void btnHandler() {
+  unsigned long switchTime = millis();
+  if (switchTime - lastSwitchTime > 200)
+  {	
+	doSnooze = true;
+    lastSwitchTime = switchTime;
+  }
 }

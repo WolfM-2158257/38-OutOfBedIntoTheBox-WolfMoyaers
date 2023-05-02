@@ -19,10 +19,7 @@ Alarm::Alarm()
 	Serial.print("address: ");
 	Serial.println(SerialBT.getBtAddressString());
 
-    // draw time
-	tft.fillScreen(TFT_BLACK);
-	drawText("Alarm at:");
-	drawText(alarmClock.getWakeupTimeStr());
+	drawParams();
 }
 
 void Alarm::update()
@@ -31,6 +28,7 @@ void Alarm::update()
 		std::string command = SerialBT.readString().c_str();
 		handleInput(command);
 	}
+	// drawText("Alarm in:", alarmClock.getTimeTillWakeupStr(), 2);
     // only checks weight when alarm is going off
 	if (this->shouldSound() && !scale.containsItem()){
 		radio.loop();
@@ -49,6 +47,11 @@ bool Alarm::shouldSound()
     return false;
 }
 
+void Alarm::snooze()
+{
+	alarmClock.snooze();
+}
+
 void Alarm::handleInput(std::string command){
 	if (command.empty()){
 		return;
@@ -57,23 +60,44 @@ void Alarm::handleInput(std::string command){
 	std::string commandBody = command.substr(1);
 	switch (commandType)
 	{
-	case 'T':
+	case 'T': // new alarm time
 		alarmClock.setWakeupTime(commandBody);
-		drawText(alarmClock.getWakeupTimeStr());
+		alarmClock.resetSnooze();
 		break;
-	case 'C':
+	case 'C': // sync clock time
 		alarmClock.setCurrentTime(commandBody);
+		break;
+	case 'V': // volume
+		radio.setVolume(commandBody);
+		break;
+	case 'S': // snooze duration
+		alarmClock.setSnoozeDuration(commandBody);
+		break;
+	case 'B': // weight treshhold
+		scale.setTreshhold(commandBody);
+		break;
 	default:
 		break;
 	}
+	drawParams();
 }
 
-void Alarm::drawText(std::string text, int y){
-	tft.setCursor(0, y, 2);
+void Alarm::drawParams(){
+	tft.fillScreen(TFT_BLACK);
+	tft.setCursor(0, 0, 2);
 
 	tft.setTextColor(TFT_WHITE, TFT_BLACK);
-	tft.setTextSize(2);
+	tft.setTextSize(1);
 
 	tft.println("Alarm at:");
 	tft.println(alarmClock.getWakeupTimeStr().c_str());
+	tft.println("Volume:");
+	tft.print(radio.getVolume());
+	tft.println("%");
+	tft.println("Snooze:");
+	tft.print(alarmClock.getSnoozeDuration());
+	tft.println("s");
+	tft.println("Blanket:");
+	tft.printf("%0.1f", scale.getTreshhold());
+	tft.println("g");
 }

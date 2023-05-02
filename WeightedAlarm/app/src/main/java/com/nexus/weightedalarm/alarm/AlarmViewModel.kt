@@ -9,6 +9,7 @@ import android.bluetooth.BluetoothSocket
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +33,7 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
         get() = _state.asStateFlow()
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             connectTillConnected()
         }
     }
@@ -86,30 +87,83 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
 
     public fun onEvent(event: AlarmEvent) {
         when (event) {
-            is AlarmEvent.OnTimeChange -> setTime(event.hours, event.minutes, event.seconds)
+            is AlarmEvent.OnTimeChange -> setTime(event.time)
+            is AlarmEvent.OnVolumeChange -> setVolume(event.volume)
+            is AlarmEvent.OnBlanketWeightChange -> setBlanketWeight(event.blanketWeight)
+            is AlarmEvent.OnSnoozeTimeChange -> setSnoozeTime(event.snoozeTime)
         }
     }
 
-    private fun setTime(hours: Int, minutes: Int, seconds: Int) {
+    private fun setSnoozeTime(snoozeTime: String) {
         _state.update {
             it.copy(
-                alarmTime = AlarmTime(hours, minutes, seconds)
+                snoozeTime = snoozeTime
+            )
+        }
+    }
+
+    private fun setBlanketWeight(blanketWeight: String) {
+        _state.update {
+            it.copy(
+                blanketWeight = blanketWeight
+            )
+        }
+    }
+
+    private fun setVolume(volume: String) {
+        _state.update {
+            it.copy(
+                volume = volume
+            )
+        }
+    }
+
+    private fun setTime(time: LocalTime) {
+        _state.update {
+            it.copy(
+                alarmTime = time
             )
         }
     }
 
     public fun onAction(action: AlarmAction) {
         when (action) {
-            AlarmAction.SetAlarmTime -> updateAlarmTime()
-            AlarmAction.SetClockTime -> updateClockTime()
+            is AlarmAction.SetAlarmTime -> updateAlarmTime()
+            is AlarmAction.SetClockTime -> updateClockTime()
+            is AlarmAction.SetVolume -> updateVolume()
+            is AlarmAction.SetBlanketWeight -> updateBlanketWeight()
+            is AlarmAction.SetSnoozeTime -> updateSnoozeTime()
         }
     }
+
+    private fun updateVolume(){
+        val volume = _state.value.volume
+        if (volume.isDigitsOnly()){
+            sendCommand("V$volume")
+        }
+    }
+
+    private fun updateSnoozeTime() {
+        val snoozeTime = _state.value.snoozeTime
+        if (snoozeTime.isDigitsOnly()){
+            sendCommand("S${snoozeTime.toFloat().times(60)}")
+        }
+    }
+
+    private fun updateBlanketWeight() {
+        val blanketWeight = _state.value.blanketWeight
+        if (blanketWeight.isDigitsOnly()){
+            sendCommand("B$blanketWeight")
+        }
+    }
+
     private fun updateAlarmTime() {
+        // first update the clock time
         val time = _state.value.alarmTime
 
-        val hours = time.hours.toString().padStart(2, '0')
-        val minutes = time.minutes.toString().padStart(2, '0')
-        val seconds = time.seconds.toString().padStart(2, '0')
+        val hours = time.hour.toString().padStart(2, '0')
+        val minutes = time.minute.toString().padStart(2, '0')
+        val seconds = time.second.toString().padStart(2, '0')
 
         val timeStr = "T$hours:$minutes:$seconds"
 
@@ -124,6 +178,7 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
         val seconds = time.second.toString().padStart(2, '0')
 
         val timeStr = "C$hours:$minutes:$seconds"
+        Log.d("ALARM_BT", "clock time: $timeStr")
         sendCommand(timeStr)
     }
 

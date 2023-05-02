@@ -14,7 +14,7 @@ class Radio{
 
         Audio audio{};
         String currentChannel = "0n-80s.radionetz.de:8000/0n-70s.mp3";
-        static const int defaultVolume = 3;
+        static const int defaultVolume = 5;
 
     public:
         Radio();
@@ -23,6 +23,8 @@ class Radio{
         void play();
         void stop();
         void setVolume(int volume);
+        void setVolume(std::string volume);
+        int getVolume();
 
         /**
          * @brief 

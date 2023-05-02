@@ -77,3 +77,13 @@ void Scale::tare()
 		Serial.println("Tare complete");
 	}
 }
+
+void Scale::setTreshhold(std::string treshhold)
+{
+	this->treshhold = stoi(treshhold);
+}
+
+float Scale::getTreshhold()
+{
+	return treshhold;
+}

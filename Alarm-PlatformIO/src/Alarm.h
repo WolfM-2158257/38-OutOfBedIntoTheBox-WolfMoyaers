@@ -17,10 +17,13 @@ class Alarm{
         Radio radio{};
         Scale scale{};
         AlarmClock alarmClock{};
+
+        void handleInput(std::string command);
+        void drawParams();
+
     public:
         Alarm();
         void update();
         bool shouldSound();
-        void handleInput(std::string command);
-        void drawText(std::string text, int y = 1);
+        void snooze();
 };

@@ -4,17 +4,15 @@ import java.time.LocalTime
 
 data class AlarmState(
     val result: EspResult = EspResult.Loading,
-    val alarmTime: AlarmTime = AlarmTime()
-)
+    val alarmTime: LocalTime = LocalTime.now(),
+    val volume: String = "5",
+    val blanketWeight: String = "500",
+    val snoozeTime: String = "3"
+) {
+}
 
 sealed interface EspResult{
     data class Error(val message: String): EspResult
     object Loading: EspResult
     object Success: EspResult
 }
-
-data class AlarmTime(
-    val hours: Int = LocalTime.now().hour,
-    val minutes: Int = LocalTime.now().minute,
-    val seconds: Int = 0
-)

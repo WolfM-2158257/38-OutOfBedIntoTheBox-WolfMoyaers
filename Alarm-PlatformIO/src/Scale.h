@@ -21,4 +21,6 @@ class Scale{
         float measureWeight();
         bool containsItem();
         void tare();
+        void setTreshhold(std::string treshhold);
+        float getTreshhold();
 };
