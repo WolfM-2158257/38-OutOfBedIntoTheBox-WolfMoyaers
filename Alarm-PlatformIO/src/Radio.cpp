@@ -2,12 +2,21 @@
 
 Radio::Radio()
 {
+
+	delay(250);
+
+	if (!SPIFFS.begin()) { // Initialize SPIFFS
+		Serial.println(F("An Error has occurred while mounting SPIFFS"));
+		return;
+	}
+
 	// Connect MAX98357 I2S Amplifier Module
 	audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
-
 	audio.setVolume(defaultVolume);
+
 	// audio.connecttohost(currentChannel.c_str());
-	audio.connecttoFS(SPIFFS, "/alarm.wav");
+	audio.connecttoFS(SPIFFS, "/alarm.mp3");
+	audio.setFileLoop(true);
 }
 
 void Radio::loop()
@@ -22,20 +31,20 @@ bool Radio::isPlaying()
 
 void Radio::play()
 {
-	Serial.println("Playing...");
     if (!isPlaying()){
-        Serial.println("Audio is not running, playing a radio.");
-		audio.connecttoFS(SPIFFS, "/alarm.wav");
+        Serial.println("Audio is not running, playing alarm.");
+		audio.pauseResume();
+		// audio.connecttoFS(SPIFFS, "/alarm.wav");
         // audio.connecttohost(currentChannel.c_str());
     }
 }
 
 void Radio::stop()
 {
-    // if (isPlaying()){
-    //     Serial.println("Audio is running, stopping it.");
-    //     audio.stopSong();
-    // }
+    if (isPlaying()){
+        Serial.println("Audio is running, stopping it.");
+		audio.pauseResume();
+    }
 }
 void Radio::setVolume(int volume)
 {

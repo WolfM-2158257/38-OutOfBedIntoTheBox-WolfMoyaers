@@ -1,7 +1,7 @@
 #include "AlarmClock.h"
 AlarmClock::AlarmClock()
 {
-
+    // setenv("TZ", "EST5EDT", 1);
 }
 
 void AlarmClock::setWakeupTime(std::tm newTime){
@@ -21,7 +21,6 @@ std::string AlarmClock::getWakeupTimeStr()
 {
     return toReadableTime(wakeupTime);
 }
-
 bool AlarmClock::isAlarming()
 {
     std::tm currentTime = getCurrentTime();
@@ -29,7 +28,6 @@ bool AlarmClock::isAlarming()
     int wakeupTimeSecondsMin = toSeconds(wakeupTime);
     int wakeupTimeSecondsMax = wakeupTimeSecondsMin + alarmSpanSeconds;
     
-    Serial.print("wakeup time: ");
     Serial.println(wakeupTimeSecondsMin);
     Serial.println(toReadableTime(wakeupTime).c_str());
     Serial.print("current time: ");
@@ -44,11 +42,24 @@ bool AlarmClock::isAlarming()
     return false;
 }
 
+void AlarmClock::setCurrentTime(std::string time)
+{
+    int unixTime = toSeconds(toTmTime(time));
+    setCurrentTime(unixTime);
+}
+
+
 std::tm AlarmClock::getCurrentTime()
 {
-    std::tm currentTime; 
-    getLocalTime(&currentTime);
+    time_t now = time(NULL);
+    std::tm currentTime = *std::localtime(&now); 
+    // getLocalTime(&currentTime);
     return currentTime;
+}
+
+void AlarmClock::setCurrentTime(int timeUnix){
+	timeval epoch = {timeUnix, 0};
+	settimeofday((const timeval*)&epoch, 0);
 }
 
 std::string toReadableTime(std::tm inputTime)

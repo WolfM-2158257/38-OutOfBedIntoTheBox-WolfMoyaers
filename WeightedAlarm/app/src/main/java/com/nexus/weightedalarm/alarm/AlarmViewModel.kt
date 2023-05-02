@@ -1,7 +1,6 @@
 package com.nexus.weightedalarm.alarm
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -19,12 +18,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import java.time.LocalTime
 import java.util.UUID
 
 class AlarmViewModel(application: Application) : AndroidViewModel(application) {
-    private val UUID_ESP = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
-    private val MODULE_MAC = "24:6F:28:96:68:86"
+    private val UUID_ESP = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB") // uuid which corresponds to the esp uuid
+    private val MODULE_MAC = "24:6F:28:96:68:86" // mac-address of the bluetooth module (esp)
 
     private lateinit var socket: BluetoothSocket
 
@@ -101,11 +100,11 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
 
     public fun onAction(action: AlarmAction) {
         when (action) {
-            AlarmAction.SetTime -> uploadTime()
+            AlarmAction.SetAlarmTime -> updateAlarmTime()
+            AlarmAction.SetClockTime -> updateClockTime()
         }
     }
-
-    private fun uploadTime() {
+    private fun updateAlarmTime() {
         val time = _state.value.alarmTime
 
         val hours = time.hours.toString().padStart(2, '0')
@@ -115,9 +114,23 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
         val timeStr = "T$hours:$minutes:$seconds"
 
         Log.d("ALARM_BT", "time: $timeStr")
+        sendCommand(timeStr)
+    }
+
+    private fun updateClockTime() {
+        val time = LocalTime.now()
+        val hours = time.hour.toString().padStart(2, '0')
+        val minutes = time.minute.toString().padStart(2, '0')
+        val seconds = time.second.toString().padStart(2, '0')
+
+        val timeStr = "C$hours:$minutes:$seconds"
+        sendCommand(timeStr)
+    }
+
+    private fun sendCommand(command: String){
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                socket.outputStream.write(timeStr.toByteArray())
+                socket.outputStream.write(command.toByteArray())
             } catch (e: Throwable) {
                 setResult(EspResult.Error("Not connected"))
                 connectTillConnected()
@@ -125,4 +138,5 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
 }

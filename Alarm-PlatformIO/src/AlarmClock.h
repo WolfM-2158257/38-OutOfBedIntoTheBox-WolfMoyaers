@@ -12,12 +12,15 @@ class AlarmClock{
         int alarmSpanSeconds = 3600;
 
         std::tm getCurrentTime();
+
     public:
         AlarmClock();
         void setWakeupTime(std::tm newTime);
         void setWakeupTime(std::string newTime);
         std::tm getWakeupTime();
         std::string getWakeupTimeStr();
+        void setCurrentTime(std::string time);
+        void setCurrentTime(int timeUnix);
 
         bool isAlarming();
 

@@ -26,16 +26,7 @@ void setup()
 {
 	// Start Serial Monitor
 	Serial.begin(115200); delay(10);
-
-	delay(250);
-
-	if (!SPIFFS.begin()) { // Initialize SPIFFS
-		Serial.println(F("An Error has occurred while mounting SPIFFS"));
-		return;
-	}
-
-	setupWifi();
-
+	// setupWifi();
 	weightedAlarm = new Alarm{};
 }
 
@@ -59,15 +50,16 @@ void setupWifi()
 	const long gmtOffset_sec = 3600;
 	const int daylightOffset_sec = 3600;
 	configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-	WiFi.disconnect();
+	// WiFi.disconnect();
 	WiFi.mode(WIFI_OFF);
-	// delay(500);
+	// esp_wifi_stop();
+	delay(500);
 }
 
 void loop()
 {
 	weightedAlarm->update();
-	if (!weightedAlarm->shouldSound()){
-		delay(5000);
-	}
+	// if (!weightedAlarm->shouldSound()){
+	// 	delay(5000);
+	// }
 }

@@ -11,7 +11,10 @@ Alarm::Alarm()
 	tft.setRotation(2);   //setRotation: 2: Screen upside down in landscape
 
 	// setup bluetooth
-	SerialBT.begin();
+	if(! SerialBT.begin("ESP Weighted Alarm") ) {
+		Serial.println("========== serialBT failed!");
+		abort();
+	}
 	Serial.println("Bluetooth Started! Ready to pair...");
 	Serial.print("address: ");
 	Serial.println(SerialBT.getBtAddressString());
@@ -24,17 +27,14 @@ Alarm::Alarm()
 
 void Alarm::update()
 {
-
-	// !! ik schrijf dit hier, anders vergeet ik het morgen... een mogelijke fix zou zijn om telkens de wifi aan en uit te zetten, 
-	// en de wifi enkel aanzetten wanneer er geluid is aant spelen.
 	if (SerialBT.available()){
 		std::string command = SerialBT.readString().c_str();
 		handleInput(command);
 	}
     // only checks weight when alarm is going off
 	if (this->shouldSound() && !scale.containsItem()){
+		radio.loop();
 		radio.play();
-        radio.loop();
 	}
 	else{
 		radio.stop();
@@ -53,14 +53,16 @@ void Alarm::handleInput(std::string command){
 	if (command.empty()){
 		return;
 	}
-
-	switch (command.at(0))
+	char commandType = command.at(0);
+	std::string commandBody = command.substr(1);
+	switch (commandType)
 	{
 	case 'T':
-		alarmClock.setWakeupTime(command.substr(1));
+		alarmClock.setWakeupTime(commandBody);
 		drawText(alarmClock.getWakeupTimeStr());
 		break;
-	
+	case 'C':
+		alarmClock.setCurrentTime(commandBody);
 	default:
 		break;
 	}
