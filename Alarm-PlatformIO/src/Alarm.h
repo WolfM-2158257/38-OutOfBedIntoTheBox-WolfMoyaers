@@ -2,7 +2,7 @@
 #include <BluetoothSerial.h>
 #include <SPI.h>
 #include <TFT_eSPI.h> // Hardware-specific library
-#include "Radio.h"
+#include "Player.h"
 #include "Scale.h"
 #include "AlarmClock.h"
 
@@ -14,7 +14,7 @@
 class Alarm{
     private:
         BluetoothSerial SerialBT;
-        Radio radio{};
+        Player player{};
         Scale scale{};
         AlarmClock alarmClock{};
 

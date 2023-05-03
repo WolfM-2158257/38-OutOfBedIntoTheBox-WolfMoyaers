@@ -31,11 +31,11 @@ void Alarm::update()
 	// drawText("Alarm in:", alarmClock.getTimeTillWakeupStr(), 2);
     // only checks weight when alarm is going off
 	if (this->shouldSound() && !scale.containsItem()){
-		radio.loop();
-		radio.play();
+		player.loop();
+		player.play();
 	}
 	else{
-		radio.stop();
+		player.stop();
 	}
 }
 
@@ -68,7 +68,7 @@ void Alarm::handleInput(std::string command){
 		alarmClock.setCurrentTime(commandBody);
 		break;
 	case 'V': // volume
-		radio.setVolume(commandBody);
+		player.setVolume(commandBody);
 		break;
 	case 'S': // snooze duration
 		alarmClock.setSnoozeDuration(commandBody);
@@ -92,7 +92,7 @@ void Alarm::drawParams(){
 	tft.println("Alarm at:");
 	tft.println(alarmClock.getWakeupTimeStr().c_str());
 	tft.println("Volume:");
-	tft.print(radio.getVolume());
+	tft.print(player.getVolume());
 	tft.println("%");
 	tft.println("Snooze:");
 	tft.print(alarmClock.getSnoozeDuration());

@@ -5,7 +5,7 @@
 #include <SPIFFS.h>
 
 
-class Radio{
+class Player{
     private:
         // Define I2S connections for MAX98357 I2S Amplifier module
         const int I2S_LRC = 12;
@@ -17,7 +17,7 @@ class Radio{
         static const int defaultVolume = 5;
 
     public:
-        Radio();
+        Player();
         void loop();
         bool isPlaying();
         void play();

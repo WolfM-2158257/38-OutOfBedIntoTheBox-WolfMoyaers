@@ -1,6 +1,6 @@
-#include "Radio.h"
+#include "Player.h"
 
-Radio::Radio()
+Player::Player()
 {
 
 	delay(250);
@@ -19,17 +19,17 @@ Radio::Radio()
 	audio.setFileLoop(true);
 }
 
-void Radio::loop()
+void Player::loop()
 {
 	audio.loop();
 }
 
-bool Radio::isPlaying()
+bool Player::isPlaying()
 {
     return audio.isRunning();
 }
 
-void Radio::play()
+void Player::play()
 {
     if (!isPlaying()){
         Serial.println("Audio is not running, playing alarm.");
@@ -38,14 +38,14 @@ void Radio::play()
     }
 }
 
-void Radio::stop()
+void Player::stop()
 {
     if (isPlaying()){
         Serial.println("Audio is running, stopping it.");
 		audio.pauseResume();
     }
 }
-void Radio::setVolume(int volume)
+void Player::setVolume(int volume)
 {
 	if (volume < 30){
 		audio.setVolume(volume);
@@ -56,16 +56,16 @@ void Radio::setVolume(int volume)
 
 }
 
-void Radio::setVolume(std::string volume){
+void Player::setVolume(std::string volume){
 	setVolume(stoi(volume));
 }
 
-int Radio::getVolume()
+int Player::getVolume()
 {
     return audio.getVolume();
 }
 
-void Radio::setChannel(String channel)
+void Player::setChannel(String channel)
 {
 	currentChannel = channel;
 	audio.connecttohost(channel.c_str());
